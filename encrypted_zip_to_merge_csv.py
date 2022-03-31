@@ -39,6 +39,13 @@ def remove_duplicates(df, folder_name, col_no):
         df_clean.to_csv('final_data_{}.csv'.format(folder_name), index=False)
     except Exception as e:
         print(e.args)
+
+def delete_child_csv(csv_list):
+    try:
+        for file in csv_list:
+            os.remove(file)
+    except Exception as e:
+        print(e.args)
     
     
 # duplicate = df_clean[df_clean.duplicated()]
@@ -57,6 +64,8 @@ def main():
     print('--'*20)
     col_no = int(input('\nEnter Column number: '))
     remove_duplicates(df, folder_name, int(col_no))
+    print(csv_list)
+    delete_child_csv(csv_list)
     
 
 if __name__ == '__main__':
