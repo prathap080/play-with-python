@@ -14,7 +14,7 @@ def get_file_paths(path, file_type='zip'):
     except Exception as e:
         print(e.args)
                 
-# extraction of encrypted zip data
+# extraction of encrypted zip data with default password 123456
 def extract_encrypted_zip(zip_file, password='123456'):
     try:
         with pyzipper.AESZipFile(zip_file, 'r', compression=pyzipper.ZIP_DEFLATED, encryption=pyzipper.WZ_AES) as extracted_zip:
