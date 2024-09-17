@@ -2,6 +2,9 @@ import os
 import pyzipper
 import pandas as pd
 
+from tkinter import Tk
+from tkinter.filedialog import askdirectory
+
 # collect all paths of zips or csvs from given folder
 def get_file_paths(path, file_type='zip'):
     try:
@@ -36,7 +39,11 @@ def remove_duplicates(df, folder_name, col_no):
     try:
         print('\nSelected Column: ',df.columns[int(col_no)-1])
         df_clean = df.drop_duplicates(subset=df.columns[int(col_no)-1])
+        Total = df_clean['TOTAL_AMOUNT_CHARGED'].sum()
         df_clean.to_csv('final_data_{}.csv'.format(folder_name), index=False)
+        print('--'*20)
+        print ("Payment for "+folder_name+" : "+str(Total))
+        print('--'*20)
     except Exception as e:
         print(e.args)
 
@@ -50,22 +57,32 @@ def delete_child_csv(csv_list):
     
 # duplicate = df_clean[df_clean.duplicated()]
 
+# csv_list only extracted files
+def csv_backup(a,b):
+    return list(set(a)-set(b))   
 
 def main():
-    path = input(r'Enter folder path: ')
-    folder_name = path.split('\\')[-1]
+    path1 = askdirectory(title="Select Folder") # shows dialog box and return the path
+    path = os.path.normpath(path1)
+    print(path)
+    folder_name = path.split(os.sep)[-1]
+    existing_csv_list = get_file_paths('.', 'csv')
     zip_list = get_file_paths(path, 'zip')
     for zip_file in zip_list:
         extract_encrypted_zip(zip_file, password='123456')
-    csv_list = get_file_paths('.', 'csv')
+
+    all_csv_list = get_file_paths('.', 'csv')
+    
+    csv_list = csv_backup(all_csv_list,existing_csv_list)
     df = merge_csv_files(csv_list)
-    print('--'*20)
+    print('--'*40)
     print({i+1: col for (i, col) in enumerate(list(df.columns))})
-    print('--'*20)
+    print('--'*40)
     col_no = int(input('\nEnter Column number: '))
     remove_duplicates(df, folder_name, int(col_no))
-    print(csv_list)
+##    print(csv_list)
     delete_child_csv(csv_list)
+    input()
     
 
 if __name__ == '__main__':
